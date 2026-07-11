@@ -1,0 +1,742 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>GoCab</title>
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="{% static 'manifest.json' %}">
+  <meta name="theme-color" content="#1d4ed8"/>
+  
+  <!-- iOS Meta Tags -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GoCab">
+<meta name="apple-mobile-web-app-orientations" content="portrait">
+
+<!-- Apple Touch Icons -->
+<link rel="apple-touch-icon" href="{% static 'assets/img/152.png' %}">
+
+
+  
+  <!-- Android Specific -->
+  <meta name="mobile-web-app-capable" content="yes">
+  
+  <!-- Favicons -->
+  <link href="{% static 'assets/img/favicon.png' %}" rel="icon">
+  <link href="{% static 'assets/img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/aos/aos.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+
+  <!-- Main CSS File -->
+  <link href="{% static 'assets/css/main.css' %}" rel="stylesheet">
+
+  <!-- PWA Styles -->
+  <style>
+    .pwa-prompt {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      z-index: 10000;
+      max-width: 320px;
+      width: 90%;
+      border: 1px solid #e0e0e0;
+      animation: slideUp 0.3s ease-out;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateX(-50%) translateY(100px); opacity: 0; }
+      to { transform: translateX(-50%) translateY(0); opacity: 1; }
+    }
+
+    .pwa-prompt h3 {
+      margin: 0 0 8px 0;
+      color: #1d4ed8;
+      font-size: 18px;
+    }
+
+    .pwa-prompt p {
+      margin: 0 0 16px 0;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .pwa-prompt-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .pwa-install-btn {
+      flex: 1;
+      background: #1d4ed8;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .pwa-install-btn:hover {
+      background: #1d4ed8;
+    }
+
+    .pwa-close-btn {
+      flex: 1;
+      background: #f5f5f5;
+      color: #666;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .pwa-close-btn:hover {
+      background: #e0e0e0;
+    }
+
+    .ios-install-hint {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #1d4ed8;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 25px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 9999;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(8, 145, 94, 0.3);
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-5px); }
+      60% { transform: translateY(-3px); }
+    }
+  </style>
+
+</head>
+
+<body class="index-page">
+  <!-- PWA Install Prompt -->
+  <div id="pwaInstallPrompt" class="pwa-prompt" style="display: none;">
+    <div class="pwa-prompt-content">
+      <h3>📱 Install GoCab App</h3>
+      <p>Get the best experience with our app. Works offline too!</p>
+      <div class="pwa-prompt-buttons">
+        <button id="pwaInstallButton" class="pwa-install-btn">Install Now</button>
+        <button id="pwaInstallClose" class="pwa-close-btn">Maybe Later</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- iOS Install Hint -->
+  <div id="iosInstallHint" class="ios-install-hint" style="display: none;">
+    📱 Add to Home Screen
+  </div>
+
+  <header id="header" class="header d-flex align-items-center fixed-top">
+    <div class="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
+
+      <a href="{% url 'home' %}" class="logo d-flex align-items-center">
+        <!-- Uncomment the line below if you also wish to use an image logo -->
+        <!-- <img src="{% static 'assets/img/logo.webp' %}" alt=""> -->
+        
+        <h1 class="sitename"> GoCab</h1>
+      </a>
+
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="{% url 'signin' %}" class="active">DRIVER</a></li>
+          <li><a href="{% url 'signin' %}">RIDER</a></li>
+          <li><a href="{% url 'signin' %}">LOG IN</a></li>
+          <li class="dropdown"><a href="#"><span>SIGN UP</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <ul>
+              <li><a href="{% url 'getaride' %}">Sign up to drive</a></li>
+              <li><a href="{% url 'becomeadriver' %}">Apply to drive</a></li>
+            </ul>
+          </li>
+
+          
+          
+        </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero section dark-background">
+
+      <div class="hero-container">
+        <video autoplay="" muted="" loop="" playsinline="" class="video-background">
+          <source src="{% static 'assets/img/hompage-video-7.mp4' %}" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+        <div class="container">
+          <div class="row align-items-center">
+            <div class="col-lg-7" data-aos="zoom-out" data-aos-delay="100">
+              <div class="hero-content">
+                <h1>No Stress, Quick Deliveries at affordable prices</h1>
+                <p>
+                  Are you tired of ridiculous prices from dispatch riders? Try one of the fastest and most reliable delivery services in town!.</p>
+                <div class="cta-buttons">
+                  <a href="{% url 'signin' %}" class="btn-primary">Send a Package</a>
+                  <a href="{% url 'getaride' %}" class="btn-secondary">Register Now</a>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-5" data-aos="zoom-out" data-aos-delay="200">
+              <div class="stats-card">
+                <div class="stats-header">
+                  <h3>Why Choose Us</h3>
+                  <div class="decoration-line"></div>
+                </div>
+                <div class="stats-grid">
+                  <div class="stat-item">
+                    <div class="stat-icon">
+                      <i class="bi bi-speedometer2"></i>
+                    </div>
+                    <div class="stat-content">
+                      <h4>100+</h4>
+                      <p>Packages Delivered</p>
+                    </div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-icon">
+                      <i class="bi bi-person-badge"></i>
+                    </div>
+                    <div class="stat-content">
+                      <h4>200+</h4>
+                      <p>Riders Registered</p>
+                    </div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-icon">
+                     <i class="bi bi-geo-alt"></i>
+                    </div>
+                    <div class="stat-content">
+                      <h4>20+</h4>
+                      <p>Cities Covered</p>
+                    </div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-icon">
+                      <i class="bi bi-emoji-smile"></i>
+                    </div>
+                    <div class="stat-content">
+                      <h4>95%+</h4>
+                      <p>Customer Satisfaction</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      
+
+    </section><!-- /Hero Section -->
+
+    <!-- About Section -->
+    <section id="about" class="about section">
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row mb-5">
+          <div class="col-lg-6 pe-lg-5" data-aos="fade-right" data-aos-delay="200">
+            <h2 class="display-6 fw-bold mb-4">More Than <span>Just a Delivery</span></h2>
+            <p class="lead mb-4">Low-cost, on-demand deliveries. Available in major cities across Nigeria.</p>
+            <div class="d-flex flex-wrap gap-4 mb-4">
+              <div class="stat-box">
+                <span class="stat-number"><span data-purecounter-start="0" data-purecounter-end="24" data-purecounter-duration="1" class="purecounter"></span>/7</span>
+                <span class="stat-label">Support</span>
+              </div>
+              <div class="stat-box">
+                <span class="stat-number"><span data-purecounter-start="0" data-purecounter-end="100" data-purecounter-duration="1" class="purecounter"></span>%</span>
+                <span class="stat-label">Checks</span>
+              </div>
+              <div class="stat-box">
+                <span class="stat-number"><span data-purecounter-start="0" data-purecounter-end="4.8" data-purecounter-duration="1" class="purecounter"></span>/5</span>
+                <span class="stat-label">Ratings</span>
+              </div>
+            </div>
+            
+          </div>
+          <div class="col-lg-6" data-aos="fade-left" data-aos-delay="300">
+            <div class="image-stack">
+              <div class="image-stack-item image-stack-item-top" data-aos="zoom-in" data-aos-delay="400">
+                <img src="{% static 'assets/img/about-us-2.png' %}" alt="Campus Life" class="img-fluid rounded-4 shadow-lg">
+              </div>
+              <div class="image-stack-item image-stack-item-bottom" data-aos="zoom-in" data-aos-delay="500">
+                <img src="{% static 'assets/img/blue-bagpack.webp' %}" alt="Students" class="img-fluid rounded-4 shadow-lg">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mission-vision-row g-4">
+          <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="value-card h-100">
+              <div class="card-icon">
+                <i class="bi bi-rocket-takeoff"></i>
+              </div>
+              <h3>Our Mission</h3>
+              <p>Providing secure, inexpensive, and trustworthy deliveries, connecting dispatch riders and customers with a seamless experience that meets diverse transportation needs in Nigeria.</p>
+            </div>
+          </div>
+          <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="value-card h-100">
+              <div class="card-icon">
+                <i class="bi bi-eye"></i>
+              </div>
+              <h3>Our Vision</h3>
+              <p>To be the most reliable and innovative delivery company in Nigeria, providing mobility solutions that enable communities and shape the future of urban mobility.</p>
+            </div>
+          </div>
+          <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="value-card h-100">
+              <div class="card-icon">
+                <i class="bi bi-star"></i>
+              </div>
+              <h3>Our Values</h3>
+              <p>Integrity, innovation, customer obsession, sustainability, inclusivity, and safety. We strive for perfection in every trip, ensuring consistent service to all.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section><!-- /About Section -->
+
+    
+
+    <!-- Students Life Block Section -->
+    <section id="students-life-block" class="students-life-block section">
+
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Our Commitment to Safety</h2>
+        <p>Your safety is our top priority. We go the extra mile to ensure every products is secure</p>
+      </div><!-- End Section Title -->
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row align-items-center gy-4">
+          <div class="col-lg-6" data-aos="fade-right" data-aos-delay="200">
+            <div class="students-life-img position-relative">
+              <img src="{% static 'assets/img/education/Untitled design (8).webp' %}" class="img-fluid rounded-4 shadow-sm" alt="Students Life">
+              <div class="img-overlay">
+                <h3>Fast, safe, and reliable deliveries – just a tap away</h3>
+                <a href="{% url 'signin' %}" class="explore-btn">Explore More <i class="bi bi-arrow-right"></i></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6" data-aos="fade-left" data-aos-delay="300">
+            <div class="students-life-content">
+
+              <div class="row g-4 mb-4">
+                <div class="col-md-6" data-aos="zoom-in" data-aos-delay="200">
+                  <div class="student-activity-item">
+                    <div class="icon-box">
+                      <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h4>Background Checks</h4>
+                    <p>All dispatch riders undergo comprehensive screening to ensure passenger safety and trust.</p>
+                  </div>
+                </div>
+
+                <div class="col-md-6" data-aos="zoom-in" data-aos-delay="300">
+                  <div class="student-activity-item">
+                    <div class="icon-box">
+                      <i class="bi bi-droplet"></i>
+                    </div>
+                    <h4>Sanitization</h4>
+                    <p>Vehicles are regularly sanitized to ensure a clean and safe ride experience.</p>
+                  </div>
+                </div>
+
+                <div class="col-md-6" data-aos="zoom-in" data-aos-delay="400">
+                  <div class="student-activity-item">
+                    <div class="icon-box">
+                      <i class="bi bi-person-check"></i>
+                    </div>
+                    <h4>Dispactch Rider ID Verification</h4>
+                    <p>Confirm your dispatch driver identity, vehicle make, and license plate before starting the trip.</p>
+                  </div>
+                </div>
+
+                <div class="col-md-6" data-aos="zoom-in" data-aos-delay="500">
+                  <div class="student-activity-item">
+                    <div class="icon-box">
+                      <i class="bi bi-flag"></i>
+                    </div>
+                    <h4>Reporting</h4>
+                    <p>Report safety concerns discreetly through the app, ensuring your feedback remains confidential.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="students-life-cta" data-aos="fade-up" data-aos-delay="600">
+                <a href="{% url 'becomeadriver' %}" class="btn btn-primary">Become a Driver</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section><!-- /Students Life Block Section -->
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="testimonials section">
+
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Testimonials</h2>
+        <p>See what customers said about their experience with GoCab</p>
+      </div><!-- End Section Title -->
+
+      <div class="container">
+
+        <div class="testimonial-masonry">
+
+          <div class="testimonial-item" data-aos="fade-up">
+            <div class="testimonial-content">
+              <div class="quote-pattern">
+                <i class="bi bi-quote"></i>
+              </div>
+              <p>I use this app every day, and it has been amazing. The dispatch riders are always courteous, and I get fast, comfortable deliveries for decent prices.</p>
+              <div class="client-info">
+                <div class="client-image">
+                  <img src="{% static 'assets/img/person/Untitled design (4).webp' %}" alt="Client">
+                </div>
+                <div class="client-details">
+                  <h3>Chijioke A.</h3>
+                  <span class="position">Frequent Rider</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-item highlight" data-aos="fade-up" data-aos-delay="100">
+            <div class="testimonial-content">
+              <div class="quote-pattern">
+                <i class="bi bi-quote"></i>
+              </div>
+              <p>I was skeptical at the beginning, but this app has changed my mind. Booking the trip is simple, and the service itself is great. I will be using it again for certain.</p>
+              <div class="client-info">
+                <div class="client-image">
+                  <img src="{% static 'assets/img/person/Untitled design (2).webp' %}" alt="Client">
+                </div>
+                <div class="client-details">
+                  <h3>Adebayo M.</h3>
+                  <span class="position">First-Time User</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-item" data-aos="fade-up" data-aos-delay="200">
+            <div class="testimonial-content">
+              <div class="quote-pattern">
+                <i class="bi bi-quote"></i>
+              </div>
+              <p>As a business traveler, I need reliability and convenience, and this app delivers just that. I have never had an issue, and the dispatch riders are always punctual.</p>
+              <div class="client-info">
+                <div class="client-image">
+                  <img src="{% static 'assets/img/person/Untitled design (5).webp' %}" alt="Client">
+                </div>
+                <div class="client-details">
+                  <h3>Emeka O.</h3>
+                  <span class="position">Business Traveler</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-item" data-aos="fade-up" data-aos-delay="300">
+            <div class="testimonial-content">
+              <div class="quote-pattern">
+                <i class="bi bi-quote"></i>
+              </div>
+              <p>The app makes my daily commute so much simpler. I love how fast and efficient it is—most definitely my go-to for delivering products around the city.</p>
+              <div class="client-info">
+                <div class="client-image">
+                  <img src="{% static 'assets/img/person/Untitled design.webp' %}" alt="Client">
+                </div>
+                <div class="client-details">
+                  <h3>Kemi D.</h3>
+                  <span class="position">Commuter</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-item highlight" data-aos="fade-up" data-aos-delay="400">
+            <div class="testimonial-content">
+              <div class="quote-pattern">
+                <i class="bi bi-quote"></i>
+              </div>
+              <p>It has been a wonderful experience with this app. The system is user-friendly, the support team is always available to assist, and I am able to earn a decent income.</p>
+              <div class="client-info">
+                <div class="client-image">
+                  <img src="{% static 'assets/img/person/Untitled design (1).webp' %}" alt="Client">
+                </div>
+                <div class="client-details">
+                  <h3>Ngozi I.</h3>
+                  <span class="position">Driver Partner</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-item" data-aos="fade-up" data-aos-delay="500">
+            <div class="testimonial-content">
+              <div class="quote-pattern">
+                <i class="bi bi-quote"></i>
+              </div>
+              <p>As a student, this app has made getting my food much safer and more convenient. I have no hesitation in using it, and the fees are very affordable.</p>
+              <div class="client-info">
+                <div class="client-image">
+                  <img src="{% static 'assets/img/person/Untitled design (3).webp' %}" alt="Client">
+                </div>
+                <div class="client-details">
+                  <h3>Osamudiamwen N</h3>
+                  <span class="position">Student</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section><!-- /Testimonials Section -->
+
+    
+
+  </main>
+
+  <footer id="footer" class="footer position-relative dark-background">
+
+    <div class="container footer-top">
+      <div class="row gy-4">
+        <div class="col-lg-4 col-md-6 footer-about">
+          <a href="index.html" class="logo d-flex align-items-center">
+            <span class="sitename">GoCab</span>
+          </a>
+          <div class="footer-contact pt-3">
+            <p class="mt-3"><strong>Phone:</strong> <span>+234 906 132 3021</span></p>
+            <p><strong>Email:</strong> <span>support@gocab.com</span></p>
+          </div>
+          <div class="social-links d-flex mt-4">
+            <a href=""><i class="bi bi-twitter-x"></i></a>
+            <a href=""><i class="bi bi-facebook"></i></a>
+            <a href=""><i class="bi bi-instagram"></i></a>
+            <a href=""><i class="bi bi-linkedin"></i></a>
+          </div>
+        </div>
+
+        <div class="col-lg-2 col-md-3 footer-links">
+          
+        </div>
+
+        <div class="col-lg-2 col-md-3 footer-links">
+          
+        </div>
+
+        <div class="col-lg-2 col-md-3 footer-links">
+          <h4>Our Services</h4>
+          <ul>
+            
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Get a Ride</a></li>
+            <li><a href="#">Become a Driver</a></li>
+          </ul>
+        </div>
+
+        <div class="col-lg-2 col-md-3 footer-links">
+          <h4>Useful Links</h4>
+          <ul>
+            <li><a href="#">Terms of service</a></li>
+            <li><a href="#">Privacy policy</a></li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="container copyright text-center mt-4">
+      <p>© <span>Copyright</span> <strong class="px-1 sitename">GoCab</strong> <span>All Rights Reserved</span></p>
+    </div>
+
+  </footer>
+
+  <!-- Scroll Top -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Preloader -->
+  <div id="preloader"></div>
+
+  <!-- Vendor JS Files -->
+  <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/php-email-form/validate.js' %}"></script>
+  <script src="{% static 'assets/vendor/aos/aos.js' %}"></script>
+  <script src="{% static 'assets/vendor/purecounter/purecounter_vanilla.js' %}"></script>
+  <script src="{% static 'assets/vendor/imagesloaded/imagesloaded.pkgd.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/glightbox/js/glightbox.min.js' %}"></script>
+
+  <!-- Main JS File -->
+  <script src="{% static 'assets/js/main.js' %}"></script>
+
+  <!-- PWA Installation Script -->
+  <script>
+    let deferredPrompt;
+    const pwaInstallPrompt = document.getElementById('pwaInstallPrompt');
+    const pwaInstallButton = document.getElementById('pwaInstallButton');
+    const pwaInstallClose = document.getElementById('pwaInstallClose');
+    const iosInstallHint = document.getElementById('iosInstallHint');
+
+    // Check if PWA is already installed
+    function isPWAInstalled() {
+      return window.matchMedia('(display-mode: standalone)').matches || 
+             window.navigator.standalone === true;
+    }
+
+    // Show install prompt for Android
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      
+      // Don't show if already installed
+      if (isPWAInstalled()) return;
+      
+      // Show prompt after 3 seconds
+      setTimeout(() => {
+        if (deferredPrompt && pwaInstallPrompt) {
+          pwaInstallPrompt.style.display = 'block';
+        }
+      }, 3000);
+    });
+
+    // Handle install button click
+    if (pwaInstallButton) {
+      pwaInstallButton.addEventListener('click', async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          
+          if (outcome === 'accepted') {
+            console.log('User accepted PWA installation');
+            if (pwaInstallPrompt) pwaInstallPrompt.style.display = 'none';
+          }
+          
+          deferredPrompt = null;
+        }
+      });
+    }
+
+    // Close prompt
+    if (pwaInstallClose) {
+      pwaInstallClose.addEventListener('click', () => {
+        if (pwaInstallPrompt) pwaInstallPrompt.style.display = 'none';
+        localStorage.setItem('pwaPromptClosed', Date.now());
+      });
+    }
+
+    // Show iOS installation hint
+    function showIOSHint() {
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const isStandalone = window.navigator.standalone;
+      
+      if (isIOS && !isStandalone && iosInstallHint) {
+        setTimeout(() => {
+          iosInstallHint.style.display = 'block';
+        }, 5000);
+      }
+    }
+
+    // iOS hint click handler
+    if (iosInstallHint) {
+      iosInstallHint.addEventListener('click', () => {
+        alert('To install GoCab on your iPhone:\n\n1. Tap the Share icon (📤) at the bottom\n2. Scroll down and tap "Add to Home Screen"\n3. Tap "Add" in the top right');
+        iosInstallHint.style.display = 'none';
+        localStorage.setItem('pwaPromptClosed', Date.now());
+      });
+    }
+
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        fetch('{% static "sw.js" %}')
+          .then(response => {
+            if (response.ok) {
+              return navigator.serviceWorker.register('{% static "sw.js" %}');
+            }
+            throw new Error('Service worker file not found');
+          })
+          .then(function(registration) {
+            console.log('Service Worker registered: ', registration.scope);
+          })
+          .catch(function(error) {
+            console.log('Service Worker registration failed: ', error);
+          });
+      });
+    }
+
+    // Track successful installation
+    window.addEventListener('appinstalled', () => {
+      console.log('PWA installed successfully');
+      if (pwaInstallPrompt) pwaInstallPrompt.style.display = 'none';
+      if (iosInstallHint) iosInstallHint.style.display = 'none';
+    });
+
+    // Initialize PWA features
+    document.addEventListener('DOMContentLoaded', function() {
+      showIOSHint();
+      
+      // Hide prompts if already installed
+      if (isPWAInstalled()) {
+        if (pwaInstallPrompt) pwaInstallPrompt.style.display = 'none';
+        if (iosInstallHint) iosInstallHint.style.display = 'none';
+      }
+    });
+  </script>
+
+</body>
+
+</html>

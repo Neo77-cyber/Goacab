@@ -1,0 +1,23 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "*"
+dj-database-url = "*"
+psycopg2 = "*"
+channels = {extras = ["daphne"], version = "*"}
+channels-redis = "*"
+django-background-tasks = "*"
+whitenoise = "*"
+django-redis = "*"
+redis = "*"
+googlemaps = "*"
+python-dotenv = "*"
+black = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"
