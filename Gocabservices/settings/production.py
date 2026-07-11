@@ -52,10 +52,9 @@ CACHES = {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "CONNECTION_POOL_CLASS": "redis.BlockingConnectionPool",
             "CONNECTION_POOL_CLASS_KWARGS": {"max_connections": 20, "timeout": 20},
-            "CONNECTION_POOL_KWARGS": {"ssl_cert_reqs": None},
             "SOCKET_CONNECT_TIMEOUT": 5,
             "SOCKET_TIMEOUT": 5,
-            "IGNORE_EXCEPTIONS": True,   
+            "IGNORE_EXCEPTIONS": True,
             "RETRY_ON_TIMEOUT": True,
         },
         "KEY_PREFIX": "gocab",
@@ -67,10 +66,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [{
-                "address": REDIS_URL,
-                "ssl_cert_reqs": None,
-            }],
+            "hosts": [REDIS_URL],
             "capacity": 1500,
             "expiry": 10,
         },

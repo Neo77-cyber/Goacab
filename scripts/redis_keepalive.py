@@ -9,10 +9,9 @@ def main():
         print("REDIS_URL not set")
         sys.exit(1)
 
-    client = redis.from_url(redis_url, ssl_cert_reqs=None, socket_connect_timeout=10)
+    client = redis.from_url(redis_url, socket_connect_timeout=10)
 
-   
-    client.set("keepalive:heartbeat", "ok", ex=60 * 60 * 24 * 7)  
+    client.set("keepalive:heartbeat", "ok", ex=60 * 60 * 24 * 7)
     value = client.get("keepalive:heartbeat")
 
     print(f"Keepalive OK — value read back: {value}")
