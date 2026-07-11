@@ -2,8 +2,7 @@ import os
 from django.core.asgi import get_asgi_application
 import django
 
-# Don't hardcode production — let the environment decide
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Gocabservices.settings.development")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Gocabservices.settings.production")
 django.setup()
 
 from channels.routing import ProtocolTypeRouter, URLRouter

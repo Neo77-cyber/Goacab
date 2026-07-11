@@ -13,7 +13,7 @@ DATABASES = {
     )
 }
 
-# Local Fallback Caching & Channels strategy (LocMem)
+
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
