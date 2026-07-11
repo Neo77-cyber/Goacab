@@ -2,9 +2,10 @@
 Ride event broadcasting and payload construction.
 All channel-layer sends go through _send(); all JSON shapes come from build_* functions.
 """
+from __future__ import annotations
 
 from decimal import Decimal
-from __future__ import annotations
+
 
 import logging
 from asgiref.sync import async_to_sync
