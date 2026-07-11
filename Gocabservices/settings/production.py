@@ -5,9 +5,9 @@ import redis
 DEBUG = False
 WHITENOISE_AUTOREFRESH = False
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "fidamano.onrender.com"]
-CSRF_TRUSTED_ORIGINS = ["https://fidamano.onrender.com", "https://*.onrender.com"]
-CORS_ALLOWED_ORIGINS = ["https://fidamano.onrender.com"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", 'goacab.onrender.com']
+CSRF_TRUSTED_ORIGINS = ["https://goacab.onrender.com", "https://*.onrender.com"]
+CORS_ALLOWED_ORIGINS = ["https://goacab.onrender.com"]
 
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
