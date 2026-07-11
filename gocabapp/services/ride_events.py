@@ -2,6 +2,8 @@
 Ride event broadcasting and payload construction.
 All channel-layer sends go through _send(); all JSON shapes come from build_* functions.
 """
+
+from decimal import Decimal
 from __future__ import annotations
 
 import logging
@@ -50,11 +52,21 @@ def build_trip_payload(ride: RideRequest, driver_user: User) -> dict:
         "passenger":    _passenger_fields(ride),
     }
 
+def _make_json_safe(value):
+    if isinstance(value, Decimal):
+        return float(value)
+    if isinstance(value, dict):
+        return {k: _make_json_safe(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_make_json_safe(v) for v in value]
+    return value
+
 
 # ── Channel broadcasts ────────────────────────────────────────────────────────
 
 def _send(group: str, message: dict) -> None:
-    async_to_sync(get_channel_layer().group_send)(group, message)
+    safe_message = _make_json_safe(message)
+    async_to_sync(get_channel_layer().group_send)(group, safe_message)
 
 
 def notify_drivers_new_ride(ride_id: int) -> None:

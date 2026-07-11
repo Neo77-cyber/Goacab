@@ -69,7 +69,7 @@ def run_accept_ride(user: User, ride_id: int) -> tuple[JsonDict, int]:
             "ride_id": ride.id,
         })
 
-        notify_rider(user.id, {
+        notify_rider(ride.id, {
             "type":    "ride_accepted",
             "ride_id": ride.id,
             "message": "Ride accepted",

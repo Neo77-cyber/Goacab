@@ -42,6 +42,7 @@ DATABASES["default"]["OPTIONS"] = {
 }
 
 
+
 REDIS_URL = os.getenv("REDIS_URL")
 
 CACHES = {
