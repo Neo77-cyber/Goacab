@@ -174,9 +174,10 @@ function updateNotificationBadge(count) {
 window.initAutocomplete = function () {
   if (!window.google?.maps?.places) return;
   const opts = {
-    types: ['geocode'],
+    types: ['address'],
     fields: ['formatted_address', 'geometry', 'place_id'],
     componentRestrictions: { country: 'ng' },
+    locationBias: { radius: 30000, center: { lat: 6.3350, lng: 5.6037 } },
   };
   ['current-location', 'destination'].forEach(id => {
     const input = el(id);
