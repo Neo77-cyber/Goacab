@@ -20,7 +20,11 @@ CITY_SPEEDS: dict[str, int] = {
 MAX_FARE = 30_000
 
 
-DRIVER_EARNINGS_RATE = 0.8  
+# Platform commission is 25% — drivers keep the rest. Card-paid rides
+# route this split into a real DriverPayout row (services/payout_service.py);
+# cash rides never touch it since the driver already holds the full cash
+# amount in hand.
+DRIVER_EARNINGS_RATE = 0.75
 
 
 def _surge_multiplier() -> float:
@@ -66,12 +70,17 @@ def calculate_ride_fare(
     return result
 
 
-def estimate_pickup_time(distance_km: float, city: str) -> int:
+def estimate_pickup_minutes(distance_km: float, city: str) -> float:
     """
-    Estimate pickup time in minutes.
+    Estimate pickup time in (fractional) minutes.
     Formula: travel time at city avg speed + 1.5 min/km traffic buffer.
     """
     speed = CITY_SPEEDS.get(city.lower(), CITY_SPEEDS["default"])
     travel_min = (distance_km / speed) * 60
     buffer_min = distance_km * 1.5   # ~1.5 extra min per km for traffic/stops
-    return round(travel_min + buffer_min)
+    return travel_min + buffer_min
+
+
+def estimate_pickup_time(distance_km: float, city: str) -> int:
+    """Whole-minute version, used to decide which rides a driver can see."""
+    return round(estimate_pickup_minutes(distance_km, city))

@@ -1,0 +1,10 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme — same dark background in both variants
+         since the SPA itself doesn't have a separate light theme. -->
+    <style name="Theme.gocab" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:statusBarColor">#20241f</item>
+        <item name="android:navigationBarColor">#20241f</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowBackground">#20241f</item>
+    </style>
+</resources>

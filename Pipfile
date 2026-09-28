@@ -16,6 +16,15 @@ redis = "*"
 googlemaps = "*"
 python-dotenv = "*"
 black = "*"
+django-ninja = "*"
+django-ninja-jwt = "*"
+django-cors-headers = "*"
+argon2-cffi = "*"
+email-validator = "*"
+django-cloudinary-storage = "*"
+cloudinary = "*"
+phonenumbers = "*"
+firebase-admin = "*"
 
 [dev-packages]
 

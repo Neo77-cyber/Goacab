@@ -27,7 +27,12 @@ node_modules
 .env.*
 .env.local
 secrets.json
+secrets/
 
 
 Gocabservices/settings/local_override.py
 Gocabservices/settings/local_*.py
+
+# Local Redis snapshots and Firebase client config: never commit
+dump.rdb
+google-services.json

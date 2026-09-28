@@ -12,6 +12,7 @@ class GocabappConfig(AppConfig):
     def ready(self):
         # Import and connect signals
         import gocabapp.signals.ride_signals
+        import gocabapp.signals.driver_signals
 
         # Start background tasks for automatic ride cleanup
         self.start_background_tasks()

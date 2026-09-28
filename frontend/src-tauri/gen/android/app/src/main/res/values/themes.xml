@@ -1,0 +1,12 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. Matches the SPA's own dark background
+         (#20241f, see src/index.css) so the native status/nav bar chrome
+         doesn't flash a mismatched default color around the WebView on
+         launch or during route transitions. -->
+    <style name="Theme.gocab" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:statusBarColor">#20241f</item>
+        <item name="android:navigationBarColor">#20241f</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowBackground">#20241f</item>
+    </style>
+</resources>

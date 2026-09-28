@@ -13,6 +13,7 @@ from channels.layers import get_channel_layer
 from django.contrib.auth.models import User
 
 from ..models import RideRequest
+from ..utils.names import display_name
 
 logger = logging.getLogger(__name__)
 
@@ -23,18 +24,19 @@ def _driver_fields(user: User) -> dict:
     p = user.driver
     return {
         "id":            user.id,
-        "name":          user.get_full_name() or user.username,
+        "name":          display_name(user, "driver", "Your driver"),
         "car_model":     getattr(p, "vehicle_model",  None) or "Unknown",
         "license_plate": getattr(p, "license_plate",  None) or "N/A",
         "rating":        float(p.rating) if getattr(p, "rating", None) is not None else 4.5,
         "phone":         str(getattr(p, "phone_number", None) or ""),
+        "photo":         p.passport_photo.url if getattr(p, "passport_photo", None) else None,
     }
 
 
 def _passenger_fields(ride: RideRequest) -> dict:
     return {
         "id":   ride.passenger.id,
-        "name": ride.passenger.get_full_name() or ride.passenger.username,
+        "name": display_name(ride.passenger, "rider", "Rider"),
     }
 
 
@@ -84,11 +86,35 @@ def notify_drivers_ride_cancelled(ride_id: int, had_driver: bool = False) -> Non
     logger.info("notify_drivers_ride_cancelled ride_id=%s had_driver=%s", ride_id, had_driver)
 
 
+def _maybe_push(ride_id: int | None, message: dict, target_user_ids: list[int] | None = None) -> None:
+    """Best-effort push hook — imported lazily so a broken/unconfigured
+    push_service can never prevent the app from importing, and wrapped so a
+    push failure never takes down the WS broadcast it piggybacks on."""
+    try:
+        from .push_service import push_for_event
+        push_for_event(ride_id, message, target_user_ids=target_user_ids)
+    except Exception:
+        logger.exception("Push hook failed for message type=%s", message.get("type"))
+
+
 def notify_rider(ride_id: int, message: dict) -> None:
-    """Send any typed event to the rider watching this ride."""
+    """Send any typed event to whoever's subscribed to this ride's group —
+    originally rider-only, now the driver's dashboard subscribes too (see
+    RideUpdatesConsumer), e.g. for in-ride chat."""
     _send(f"ride_{ride_id}", message)
+    _maybe_push(ride_id, message)
 
 
-def notify_driver_pool(message: dict) -> None:
-    """Broadcast an arbitrary event to all connected drivers."""
+def notify_driver_pool(message: dict, push_to_user_ids: list[int] | None = None) -> None:
+    """Broadcast an arbitrary event to all connected drivers. push_to_user_ids
+    is only needed for events with a PUSH_TEMPLATES entry targeting
+    "explicit" (currently just new_ride_request) — the broadcast payload
+    alone doesn't carry which drivers are online."""
     _send("driver_updates", message)
+    _maybe_push(None, message, target_user_ids=push_to_user_ids)
+
+
+def notify_notification_count(user_id: int, count: int) -> None:
+    """Push a live unread-notification-count update to one user's
+    NotificationConsumer connection(s)."""
+    _send(f"notifications_{user_id}", {"type": "notification_update", "count": count})

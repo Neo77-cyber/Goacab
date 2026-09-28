@@ -20,11 +20,13 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+from gocabapp.api.main import api as ninja_api
 
 import os
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("api/v1/", ninja_api.urls),
     path("", include("gocabapp.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

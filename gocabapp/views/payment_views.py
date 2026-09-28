@@ -4,10 +4,11 @@ import json
 import logging
 
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
 
+from ..models import RideRequest
 from ..services.payment_service import (
     estimate_fare_from_locations,
     handle_payment_callback,
@@ -45,6 +46,13 @@ def initiate_payment(request, ride_id):
     return JsonResponse(body, status=status)
 
 
+@login_required
 def payment_success(request, ride_id):
+    # This URL is Paystack's browser-redirect target, so it's reachable
+    # by anyone in the sense that the URL isn't secret — but it must never
+    # let a caller mark a ride they don't own as paid. Ownership check first,
+    # unrelated to handle_payment_callback's own reference/amount checks.
+    if not RideRequest.objects.filter(id=ride_id, passenger=request.user).exists():
+        return HttpResponseForbidden("Not your ride.")
     url = handle_payment_callback(ride_id, request.GET)
     return redirect(url)

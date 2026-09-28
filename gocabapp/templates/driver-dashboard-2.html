@@ -38,6 +38,9 @@
                 <button class="close-sidebar-btn" id="sidebar-close"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <nav class="nav-menu">
+                {% if is_dual_role %}
+                <a href="{% url 'switch_role' 'rider' %}" class="nav-item"><i class="fa-solid fa-right-left"></i> Switch to Rider</a>
+                {% endif %}
                 <a href="{% url 'logout' %}" class="nav-item"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
             </nav>
         </aside>

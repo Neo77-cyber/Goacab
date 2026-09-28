@@ -6,12 +6,12 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Gocabservices.settings.producti
 django.setup()
 
 from channels.routing import ProtocolTypeRouter, URLRouter
-from channels.auth import AuthMiddlewareStack
 import gocabapp.routing
+from gocabapp.ws_auth import JWTAuthMiddlewareStack
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
-    "websocket": AuthMiddlewareStack(
+    "websocket": JWTAuthMiddlewareStack(
         URLRouter(gocabapp.routing.websocket_urlpatterns)
     ),
 })

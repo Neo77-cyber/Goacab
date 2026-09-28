@@ -8,7 +8,8 @@ from django.contrib.auth.models import User
 from django.db import transaction
 from django.utils import timezone
 
-from ..models import RideRequest
+from ..models import DriverCancellation, RideRequest
+from ..utils.names import display_name
 from ..services.ride_events import (
     build_trip_payload,
     notify_driver_pool,
@@ -24,11 +25,12 @@ def _driver_ws_info(user: User) -> dict:
     d = user.driver
     return {
         "id":            user.id,
-        "name":          user.get_full_name() or user.username,
+        "name":          display_name(user, "driver", "Your driver"),
         "phone":         getattr(d, "phone_number", None) or "Not available",
         "car_model":     getattr(d, "vehicle_model",  None) or "Unknown",
         "license_plate": getattr(d, "license_plate",  None) or "N/A",
         "rating":        float(d.rating) if getattr(d, "rating", None) else 4.5,
+        "photo":         d.passport_photo.url if getattr(d, "passport_photo", None) else None,
     }
 
 
@@ -173,17 +175,28 @@ def run_driver_cancel_ride(user: User, ride_id: int) -> tuple[JsonDict, int]:
             ride.driver      = None
             ride.status      = "pending"
             ride.accepted_at = None
+            # This ride is genuinely reopened — clear any earlier
+            # unmatched-too-long alert so the stale-ride sweep can alert
+            # again if it goes stale a second time instead of staying
+            # permanently silenced by the first alert.
+            ride.pending_alert_sent_at = None
             ride.save()
             user.driver.set_available()
+            DriverCancellation.objects.create(driver=user, ride=ride)
 
         notify_rider(ride.id, {
             "type": "ride_update", "event": "driver_cancelled",
             "ride_id": ride.id, "message": "Driver cancelled the ride",
         })
-        notify_driver_pool({
-            "type": "new_ride_request", "ride_id": ride.id,
-            "message": "A ride is now available",
-        })
+        online_driver_ids = list(
+            User.objects.filter(
+                driver__is_online=True, driver__is_approved=True
+            ).values_list("id", flat=True)
+        )
+        notify_driver_pool(
+            {"type": "new_ride_request", "ride_id": ride.id, "message": "A ride is now available"},
+            push_to_user_ids=online_driver_ids,
+        )
 
         return {"status": "success", "message": "Ride cancelled"}, 200
 

@@ -1,11 +1,11 @@
 # Import all views to make them available from gocabapp.views
 from .auth_views import (
     home,
-    get_a_ride,
-    become_a_driver,
+    signup,
     upgrade_to_driver,
     signin,
     logout_view,
+    switch_role,
 )
 from .rider_views import rider_dashboard, request_ride, cancel_ride, ride_status
 from .driver_views import (
@@ -28,11 +28,11 @@ from .payment_views import estimate_fare, initiate_payment, payment_success
 __all__ = [
     # Auth views
     "home",
-    "get_a_ride",
-    "become_a_driver",
+    "signup",
     "upgrade_to_driver",
     "signin",
     "logout_view",
+    "switch_role",
     # Rider views
     "rider_dashboard",
     "request_ride",

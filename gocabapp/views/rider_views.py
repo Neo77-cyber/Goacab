@@ -1,4 +1,5 @@
 from __future__ import annotations
+from ..utils.names import display_name
 
 import json
 import logging
@@ -33,7 +34,7 @@ def _build_driver_info(driver_user) -> dict | None:
         return None
     d = driver_user.driver
     return {
-        "name": driver_user.get_full_name() or driver_user.username,
+        "name": display_name(driver_user, "driver", "Your driver"),
         "car_model": getattr(d, "vehicle_model", None) or "Unknown",
         "license_plate": getattr(d, "license_plate", None) or "N/A",
         "phone": getattr(d, "phone_number", None) or "Not available",
@@ -159,6 +160,7 @@ def rider_dashboard(request):
             user=request.user, is_active=True
         ).count(),
         "GOOGLE_MAPS_API_KEY": getattr(settings, "GOOGLE_MAPS_API_KEY", "") or "",
+        "is_dual_role": hasattr(request.user, "driver"),
     }
     return render(request, "rider-dashboard-2.html", context)
 
@@ -226,6 +228,7 @@ def request_ride(request):
             distance_km=distance_km,
             duration_min=duration_min,
             total_fare=fare["total_fare"],
+            surge_multiplier=fare["surge_multiplier"],
             status="pending",
             pickup_latitude=pickup_coords["lat"] if pickup_coords else None,
             pickup_longitude=pickup_coords["lng"] if pickup_coords else None,

@@ -76,6 +76,7 @@ def driver_dashboard(request):
         "payment_rate":     payment_rate,
         "todays_earnings":  todays_earnings,
         "is_driver":        True,
+        "is_dual_role":     hasattr(request.user, "rider"),
     }
     return render(request, "driver-dashboard-2.html", context)
 

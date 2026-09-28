@@ -164,41 +164,41 @@
         {% endif %}
 
         <div class="signup-container">
-          <form class="signup-form" action="{% url 'signin' %}" method="POST">
+          <form class="signup-form" id="signin-form" action="{% url 'signin' %}" method="POST">
             {% csrf_token %}
-            <input type="hidden" name="role" value="driver" id="role-input">
-            
+
             <div class="form-group">
-              <input 
-                type="text" 
-                name="username" 
-                placeholder="Username" 
-                required 
-                autocomplete="username"
-                autocapitalize="none"
+              <input
+                type="email"
+                name="email"
+                id="id_email"
+                placeholder="Email Address"
+                required
+                autocomplete="email"
               >
             </div>
 
-            <div class="form-group">
-              <input 
-                type="password" 
-                name="password" 
-                placeholder="Password" 
-                required 
-                autocomplete="current-password"
+            <div class="form-group" id="code-field-wrapper" style="display:none;">
+              <input
+                type="text"
+                name="code"
+                id="id_code"
+                placeholder="6-digit code"
+                inputmode="numeric"
+                maxlength="6"
+                autocomplete="one-time-code"
               >
             </div>
 
-            <button type="submit" class="submit-btn" id="submit-btn">
-              Sign In
+            <p id="code-status" class="login-link" style="display:none;"></p>
+
+            <button type="button" class="submit-btn" id="submit-btn">
+              Send Code
             </button>
           </form>
 
           <p class="login-link">
-            Don't have an account? <a href="{% url 'getaride' %}" id="signup-link">Sign up here</a>
-          </p>
-          <p class="login-link">
-            Become a Driver <a href="{% url 'becomeadriver' %}" id="signup-link">Sign up here</a>
+            Don't have an account? <a href="{% url 'signup' %}" id="signup-link">Sign up here</a>
           </p>
           <p class="login-link">
             <a href="{% url 'home' %}">Back to Home</a>
@@ -208,30 +208,73 @@
     </div>
 
     <script>
-      // Role Selection
-      const roleButtons = document.querySelectorAll('.role-btn');
-      const roleInput = document.getElementById('role-input');
+      // Email OTP sign-in: "Send Code" hits the shared JSON API directly
+      // (no page reload), then the same button becomes a real submit that
+      // POSTs email+code to this view for verification — see
+      // gocabapp.views.auth_views.signin.
+      const signinForm = document.getElementById('signin-form');
+      const emailInput = document.getElementById('id_email');
+      const codeFieldWrapper = document.getElementById('code-field-wrapper');
+      const codeInput = document.getElementById('id_code');
+      const codeStatus = document.getElementById('code-status');
       const submitBtn = document.getElementById('submit-btn');
+      let codeSent = false;
 
-      if (roleButtons.length > 0) {
-        roleButtons.forEach(button => {
-          button.addEventListener('click', () => {
-            roleButtons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-            roleInput.value = button.dataset.role;
-            submitBtn.textContent = `Sign In as ${button.dataset.role.charAt(0).toUpperCase() + button.dataset.role.slice(1)}`;
-          });
+      function extractErrorMessage(data) {
+        if (!data) return 'Something went wrong.';
+        if (typeof data.detail === 'string') return data.detail;
+        if (Array.isArray(data.detail)) {
+          return data.detail.map((d) => d.msg).join(' ');
+        }
+        return 'Something went wrong.';
+      }
+
+      if (submitBtn) {
+        submitBtn.addEventListener('click', async () => {
+          if (codeSent) return; // button is now type=submit; let the form post normally
+
+          const email = emailInput.value.trim();
+          if (!email) {
+            emailInput.reportValidity();
+            return;
+          }
+
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Sending...';
+
+          try {
+            const response = await fetch('/api/v1/auth/request-code', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email }),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(extractErrorMessage(data));
+
+            codeStatus.textContent = data.detail;
+            codeStatus.style.display = 'block';
+            codeFieldWrapper.style.display = 'block';
+            codeInput.required = true;
+            codeInput.focus();
+
+            submitBtn.type = 'submit';
+            submitBtn.textContent = 'Verify & Sign In';
+            codeSent = true;
+          } catch (err) {
+            codeStatus.textContent = err.message;
+            codeStatus.style.display = 'block';
+            submitBtn.textContent = 'Send Code';
+          } finally {
+            submitBtn.disabled = false;
+          }
         });
       }
 
-      // Form Submission with Loading State
-      const form = document.querySelector('.signup-form');
-      if (form) {
-        form.addEventListener('submit', (e) => {
-          const submitBtn = document.getElementById('submit-btn');
+      if (signinForm) {
+        signinForm.addEventListener('submit', () => {
           if (submitBtn) {
-            submitBtn.classList.add('loading');
             submitBtn.disabled = true;
+            submitBtn.textContent = 'Verifying...';
           }
         });
       }

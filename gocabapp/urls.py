@@ -7,9 +7,11 @@ from .views import estimate_fare
 urlpatterns = [
     path("", views.home, name="home"),
     path("signin/", views.signin, name="signin"),
-    path("get-a-ride/", views.get_a_ride, name="getaride"),
-    path("become-a-driver/", views.become_a_driver, name="becomeadriver"),
+    path("signup/", views.signup, name="signup"),
+    path("get-a-ride/", views.signup, {"default_role": "rider"}, name="getaride"),
+    path("become-a-driver/", views.signup, {"default_role": "driver"}, name="becomeadriver"),
     path("upgrade-to-driver/", views.upgrade_to_driver, name="upgrade_to_driver"),
+    path("switch-role/<str:role>/", views.switch_role, name="switch_role"),
     path("driver-dashboard/", views.driver_dashboard, name="driver_dashboard"),
     path("driver-profile/", views.driver_profile, name="driver_profile"),
     path("rider-dashboard/", views.rider_dashboard, name="rider_dashboard"),
